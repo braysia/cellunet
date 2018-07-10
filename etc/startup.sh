@@ -1,5 +1,6 @@
 #! /bin/bash
-# Check for CUDA and try to install.
+# The startup script for Google Compute Engine. Use Tesla K80 with Ubuntu 16.04.
+
 if ! dpkg-query -W cuda-9-0; then
   # The 16.04 installer works with 16.10.
   apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
