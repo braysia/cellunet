@@ -20,12 +20,18 @@ def predict(img_path, weight_path):
     x = np.expand_dims(x, 0)
     num_colors = x.shape[-1]
 
-    x = pad_image(x)
+    x, hpadding, wpadding = pad_image(x)
 
     model = utils.model_builder.get_model(x.shape[1], x.shape[2], num_colors, activation=None)
     model.load_weights(weight_path)
     predictions = model.predict(x, batch_size=1)
     predictions = [predictions[0, :, :, i] for i in range(predictions.shape[-1])]
+
+    # resize predictions to match image dimensions (i.e. remove padding)
+    height = predictions[0].shape()[0]
+    width = predictions[0].shape()[0]
+    predictions = [p[hpadding[0]:height-hpadding[1], wpadding[0]:width-wpadding[1]] for p in predictions]
+
     predictions = normalize_predictions(predictions)
 
     return predictions

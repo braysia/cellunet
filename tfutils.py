@@ -70,6 +70,7 @@ def parse_image_files(inputs):
 def pad_image(image):
     # assumes the image is an np array of dimensions d0 x d1 x d2 x d3
     # where d1 is height, d2 is width, and d3 is colors
+    # returns a list of padded image, hpadding (tuple), wpadding (tuple)
 
     height = image.shape[1]
     hdelta = 8 - (height % 8)
@@ -89,7 +90,7 @@ def pad_image(image):
     else:
         wpadding = (int(wdelta/2.0), int(wdelta/2.0)+1)
 
-    return np.pad(image, ((0, 0), hpadding, wpadding, (0, 0)), 'constant', constant_values=0.0)
+    return [np.pad(image, ((0, 0), hpadding, wpadding, (0, 0)), 'constant', constant_values=0.0), hpadding, wpadding]
 
 
 def normalize_predictions(predictions):
