@@ -24,7 +24,7 @@ def train(image_list, labels_list, output, patchsize=256, nsamples=10):
     li_labels = [conv_labels2dto3d(lb) for lb in li_labels]
     x_tests, y_tests = extract_patch_list(li_image, li_labels, ecoords, patchsize, patchsize)
 
-    from tt import augment_pipe
+    from train import augment_pipe
     make_outputdir(output)
 
     for i in range(nsamples):
