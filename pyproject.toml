@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "cellunet"
+version = "0.2.2"
+description = ""
+authors = ["Takamasa Kudo <kudo@stanford.edu>"]
+exclude = ["cellunet/data/cnn_model_weights.hdf5"]
+
+[tool.poetry.dependencies]
+python = "^3.5"
+numpy = "=1.14.6"
+scipy = "=1.1.0"
+pandas = "=0.23.0"
+tifffile = "^2019.1"
+tensorflow = "=1.8.0"
+keras = "=2.0.0"
+scikit-image = "=0.14.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
