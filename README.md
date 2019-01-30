@@ -5,8 +5,8 @@ learning architecture and on-the-fly data augmentation.
 
 Example usage:
 ```
-python cellunet/train.py -i data/nuc0.png -l data/labels0.tif -o output -n 100 -e 5 -p 256
-python cellunet/predict.py -i data/nuc1.png -w output/cnn_model_weights.hdf5 -o output
+python cellunet/train.py -i cellunet/data/nuc0.png -l cellunet/data/labels0.tif -o output -n 100 -e 5 -p 256
+python cellunet/predict.py -i cellunet/data/nuc1.png -w output/cnn_model_weights.hdf5 -o output
 ```
 
 In brief, the model accepts as training data a series of images segmented into 
@@ -47,22 +47,22 @@ Avoid Keras==2.2.
 
 #### Getting started
 ```
-python cellunet/train.py -i data/nuc0.png -l data/labels0.tif
+python cellunet/train.py -i cellunet/data/nuc0.png -l cellunet/data/labels0.tif
 ```
 
 #### Training with flexible weights (10x weights on Border)
 ```
-python cellunet/train.py -i data/nuc0.png -l data/labels0.tif -q 1 1 10 -o output
+python cellunet/train.py -i cellunet/data/nuc0.png -l cellunet/data/labels0.tif -q 1 1 10 -o output
 ```
 
 #### Resume training
 ```
-python cellunet/train.py -i data/nuc0.png -l data/labels0.tif -w data/weights.tests.hdf5
+python cellunet/train.py -i cellunet/data/nuc0.png -l cellunet/data/labels0.tif -w cellunet/data/weights.tests.hdf5
 ```
 
 #### Training using multiple images
 ```
-python cellunet/train.py -i data/nuc0.png / data/nuc0.png -l data/labels0.tif / data/labels1.tif
+python cellunet/train.py -i cellunet/data/nuc0.png / cellunet/data/nuc0.png -l cellunet/data/labels0.tif / cellunet/data/labels1.tif
 ```
 
 #### Training using multiple color channels
@@ -70,11 +70,11 @@ Images provided may have any number of color channels; note that in the training
 data nuc_0.png and nuc_1.png have only 1 color channel while composite_nuc.tif has
 2 color channels.
 ```
-python cellunet/train.py -i data/composite_nuc.tif -l data/labels0.tif -o output -n 100 -e 5 -p 256 -c 2
-python cellunet/predict.py -i data/composite_nuc.tif -w output/cnn_model_weights.hdf5 -o output -c 2
+python cellunet/train.py -i cellunet/data/composite_nuc.tif -l cellunet/data/labels0.tif -o output -n 100 -e 5 -p 256 -c 2
+python cellunet/predict.py -i cellunet/data/composite_nuc.tif -w output/cnn_model_weights.hdf5 -o output -c 2
 ```
 
 #### Prediction with trained weights
 ```
-python cellunet/predict.py -i data/nuc0.png -w data/cnn_model_weights.hdf5
+python cellunet/predict.py -i cellunet/data/nuc0.png -w cellunet/data/cnn_model_weights.hdf5
 ```
