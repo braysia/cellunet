@@ -7,11 +7,15 @@ from tfutils import make_outputdir, normalize
 from tfutils import pad_image, normalize_predictions
 import tifffile as tiff
 import utils.model_builder
-from scipy.ndimage import zoom
+from skimage.transform import resize, rescale
+
 
 def predict(img_path, weight_path, zoom_factor=1):
     x = imread(img_path)
-    x = zoom(x, zoom=1/zoom_factor)
+    orig_size = x.shape
+    if not zoom_factor == 1:
+        # FIXME. It probably does not work for 3D shape.
+        x = rescale(x, 1/zoom_factor, preserve_range=True, anti_aliasing=True)
     x = normalize(x)
 
     if x.ndim == 2:
@@ -19,6 +23,7 @@ def predict(img_path, weight_path, zoom_factor=1):
     elif x.ndim == 3:
         x = np.moveaxis(x, 0, -1)
     x = np.expand_dims(x, 0)
+
     num_colors = x.shape[-1]
 
     x, hpadding, wpadding = pad_image(x)
@@ -33,8 +38,9 @@ def predict(img_path, weight_path, zoom_factor=1):
     width = predictions[0].shape[1]
     predictions = [p[hpadding[0]:height-hpadding[1], wpadding[0]:width-wpadding[1]] for p in predictions]
 
+    if not zoom_factor == 1:
+        predictions = [resize(p, orig_size, order=3, preserve_range=True, anti_aliasing=False).astype(np.float32) for p in predictions]
     predictions = normalize_predictions(predictions)
-
     return predictions
 
 
