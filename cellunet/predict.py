@@ -7,10 +7,11 @@ from tfutils import make_outputdir, normalize
 from tfutils import pad_image, normalize_predictions
 import tifffile as tiff
 import utils.model_builder
+from scipy.ndimage import zoom
 
-
-def predict(img_path, weight_path):
+def predict(img_path, weight_path, zoom_factor=1):
     x = imread(img_path)
+    x = zoom(x, zoom=1/zoom_factor)
     x = normalize(x)
 
     if x.ndim == 2:
@@ -49,12 +50,13 @@ def _parse_command_line_args():
     parser.add_argument('-i', '--image', help='image file path')
     parser.add_argument('-w', '--weight', help='hdf5 file path')
     parser.add_argument('-o', '--output', default='.', help='output directory')
+    parser.add_argument('-z', '--zoom', type=int, default=1, help='use the same value with training')
     return parser.parse_args()
 
 
 def _main():
     args = _parse_command_line_args()
-    images = predict(args.image, args.weight)
+    images = predict(args.image, args.weight, args.zoom)
     save_output(args.output, images, splitext(basename(args.image))[0])
 
 

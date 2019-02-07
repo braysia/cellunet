@@ -21,7 +21,8 @@ from tfutils import make_outputdir, normalize, conv_labels2dto3d
 from os.path import join
 from tfutils import parse_image_files
 from on_the_fly import affine_transform, random_flip, random_rotate, random_illum
-
+from scipy.ndimage import zoom
+from skimage.transform import rescale
 
 FRAC_TEST = 0.1
 augment_pipe = [affine_transform(points=10, distort=2), random_flip(),
@@ -36,8 +37,17 @@ def define_callbacks(output):
     return [csv_logger, cp_cb]
 
 
+def predownsample(image, labels, zoom_factor):
+    if zoom_factor == 1:
+        return image, labels
+    image = zoom(image, zoom=1/zoom_factor)
+    labels = rescale(labels, 1/zoom_factor, order=0, preserve_range=True, anti_aliasing=True)
+    return image, labels.astype(np.uint8)
+
+
+
 def train(image_list, labels_list, output, patchsize=256, nsteps=100,
-          batch_size=16, nepochs=10, weights=None, loss_weights=[1.0, 1.0, 10.0]):
+          batch_size=16, nepochs=10, weights=None, loss_weights=[1.0, 1.0, 10.0], zoom_factor=1):
 
     li_image, li_labels = [], []
     for image_path, labels_path in zip(image_list, labels_list):
@@ -47,6 +57,7 @@ def train(image_list, labels_list, output, patchsize=256, nsteps=100,
             image = np.expand_dims(image, -1)
         elif image.ndim == 3:
             image = np.moveaxis(image, 0, -1)
+        image, labels = predownsample(image, labels, zoom_factor)
         li_image.append(image)
         li_labels.append(labels)
     num_colors = li_image[0].shape[-1]
@@ -124,6 +135,7 @@ def _parse_command_line_args():
     parser.add_argument('-w', '--weights', help='hdf5 weight file path')
     parser.add_argument('-q', '--loss', type=float, nargs='+', action='append',
                         help='Background, Interior, Border weight for loss function')
+    parser.add_argument('-z', '--zoom', type=int, default=1, help='downsample beforehand')
     return parser.parse_args()
 
 
@@ -135,7 +147,7 @@ def _main():
     labels = parse_image_files(args.labels)[0]
     train(images, labels, args.output, args.patch,
           args.nsteps, args.batch, args.epoch, args.weights,
-          args.loss[0])
+          args.loss[0], args.zoom)
 
 
 if __name__ == "__main__":
