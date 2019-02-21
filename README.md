@@ -41,7 +41,6 @@ Avoid Keras==2.2.
 - `i` - image file path
 - `w` - hdf5 weight file path 
 - `o` - output directory
-- `c` - number of color channels (default 1) -- this *must* match the number of color channels in the training data
 
 ### Example Commands
 
@@ -71,8 +70,8 @@ Images provided may have any number of color channels; note that in the training
 data nuc_0.png and nuc_1.png have only 1 color channel while composite_nuc.tif has
 2 color channels.
 ```
-python train.py -i data/composite_nuc.tif -l data/labels0.tif -o output -n 100 -e 5 -p 256 -c 2
-python predict.py -i data/composite_nuc.tif -w output/cnn_model_weights.hdf5 -o output -c 2
+python train.py -i data/composite_nuc.tif -l data/labels0.tif -o output -n 100 -e 5 -p 256
+python predict.py -i data/composite_nuc.tif -w output/cnn_model_weights.hdf5 -o output
 ```
 
 #### Prediction with trained weights
