@@ -132,8 +132,8 @@ def _main():
     args = _parse_command_line_args()
     if args.loss is None:
         args.loss = [[1., 1., 1.]]
-    images = parse_image_files(args.image)[0]
-    labels = parse_image_files(args.labels)[0]
+    images = list(parse_image_files(args.image))[0]
+    labels = list(parse_image_files(args.labels))[0]
     train(images, labels, args.output, args.patch,
           args.nsteps, args.batch, args.epoch, args.weights,
           args.loss[0])
