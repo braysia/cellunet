@@ -85,11 +85,11 @@ def get_core(dim1, dim2, dim3):
 
     return [x, y]
 
-def get_model(dim1, dim2, dim3, activation="softmax"):
+def get_model(dim1, dim2, dim3, num_labels, activation="softmax"):
 
     [x, y] = get_core(dim1, dim2, dim3)
 
-    y = keras.layers.Convolution2D(3, 1, 1, **option_dict_conv)(y)
+    y = keras.layers.Convolution2D(num_labels, 1, 1, **option_dict_conv)(y)
 
     if activation is not None:
         y = keras.layers.Activation(activation)(y)

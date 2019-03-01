@@ -32,9 +32,10 @@ def make_outputdir(output):
 
 
 def imread_check_tiff(path):
-    img = imread0(path)
-    if img.dtype == 'object' or path.endswith('tif'):
+    if path.endswith('tif'):
         img = tiff.imread(path)
+    else:
+        img = imread0(path)
     return img
 
 

@@ -24,7 +24,10 @@ def predict(img_path, weight_path):
 
     model = utils.model_builder.get_model(x.shape[1], x.shape[2], num_colors, activation=None)
     model.load_weights(weight_path)
+    import time
+    qq= time.time()
     predictions = model.predict(x, batch_size=1)
+    print(time.time() - qq)
     predictions = [predictions[0, :, :, i] for i in range(predictions.shape[-1])]
 
     # resize predictions to match image dimensions (i.e. remove padding)

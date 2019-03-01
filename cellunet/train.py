@@ -21,6 +21,7 @@ from tfutils import make_outputdir, normalize, conv_labels2dto3d
 from os.path import join
 from tfutils import parse_image_files
 from on_the_fly import affine_transform, random_flip, random_rotate, random_illum
+from utils.metrics import channel_precision, channel_recall
 
 
 FRAC_TEST = 0.1
@@ -37,7 +38,7 @@ def define_callbacks(output):
 
 
 def train(image_list, labels_list, output, patchsize=256, nsteps=100,
-          batch_size=16, nepochs=10, weights=None, loss_weights=[1.0, 1.0, 10.0]):
+          batch_size=16, nepochs=10, weights=None, loss_weights=[1.0, 1.0, 1.0]):
 
     li_image, li_labels = [], []
     for image_path, labels_path in zip(image_list, labels_list):
@@ -57,16 +58,17 @@ def train(image_list, labels_list, output, patchsize=256, nsteps=100,
     ecoords_tests, ecoords_train = ecoords[:num_tests], ecoords[num_tests:]
     x_tests, y_tests = extract_patch_list(li_image, li_labels, ecoords_tests, patchsize, patchsize)
 
-    model = utils.model_builder.get_model(patchsize, patchsize, num_colors, activation=None)
+    num_labels = y_tests.shape[-1] 
+    loss_weights = [1.0, ] * num_labels
+
+    model = utils.model_builder.get_model(patchsize, patchsize, num_colors, num_labels, activation=None)
     loss = lambda y_true, y_pred: weighted_crossentropy(y_true, y_pred, loss_weights)
-    metrics = [keras.metrics.categorical_accuracy,
-               utils.metrics.channel_recall(channel=0, name="background_recall"),
-               utils.metrics.channel_precision(channel=0, name="background_precision"),
-               utils.metrics.channel_recall(channel=1, name="interior_recall"),
-               utils.metrics.channel_precision(channel=1, name="interior_precision"),
-               utils.metrics.channel_recall(channel=2, name="boundary_recall"),
-               utils.metrics.channel_precision(channel=2, name="boundary_precision"),
-               ]
+    metrics = [keras.metrics.categorical_accuracy, ]
+    _recall = [channel_recall(channel=i, name="label{0}_recall".format(i)) for i in range(num_labels)]
+    _precision = [channel_precision(channel=i, name="label{0}_precision".format(i)) for i in range(num_labels)]
+    _met = [i for i in zip(_recall, _precision)]
+    _met = [i for ii in _met for i in ii]
+    metrics += _met
     if weights is not None:
         model.load_weights(weights)
     optimizer = keras.optimizers.RMSprop(lr=1e-4)
@@ -77,7 +79,6 @@ def train(image_list, labels_list, output, patchsize=256, nsteps=100,
     callbacks = define_callbacks(output)
 
     datagen = PatchDataGeneratorList(augment_pipe)
-
     history = model.fit_generator(
         generator=datagen.flow(li_image, li_labels, ecoords_train, patchsize, patchsize, batch_size=batch_size, shuffle=True),
         steps_per_epoch=nsteps,
