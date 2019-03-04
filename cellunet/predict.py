@@ -9,7 +9,7 @@ import tifffile as tiff
 import utils.model_builder
 
 
-def predict(img_path, weight_path):
+def predict(img_path, weight_path, numlabels=3):
     x = imread(img_path)
     x = normalize(x)
 
@@ -22,12 +22,9 @@ def predict(img_path, weight_path):
 
     x, hpadding, wpadding = pad_image(x)
 
-    model = utils.model_builder.get_model(x.shape[1], x.shape[2], num_colors, activation=None)
+    model = utils.model_builder.get_model(x.shape[1], x.shape[2], num_colors, numlabels, activation=None)
     model.load_weights(weight_path)
-    import time
-    qq= time.time()
     predictions = model.predict(x, batch_size=1)
-    print(time.time() - qq)
     predictions = [predictions[0, :, :, i] for i in range(predictions.shape[-1])]
 
     # resize predictions to match image dimensions (i.e. remove padding)
@@ -52,12 +49,14 @@ def _parse_command_line_args():
     parser.add_argument('-i', '--image', help='image file path')
     parser.add_argument('-w', '--weight', help='hdf5 file path')
     parser.add_argument('-o', '--output', default='.', help='output directory')
+    parser.add_argument('-c', '--numlabels', type=int, default=3,
+                        help='number of labels. specify if not three')
     return parser.parse_args()
 
 
 def _main():
     args = _parse_command_line_args()
-    images = predict(args.image, args.weight)
+    images = predict(args.image, args.weight, args.numlabels)
     save_output(args.output, images, splitext(basename(args.image))[0])
 
 
