@@ -61,11 +61,26 @@ def _histogram_matching(img, previmg, BINS=500, QUANT=2, THRES=False):
 
 
 
-def histo_match(ref='ref', bins=256, quant=5):
+def histo_match(ref='ref', bins=256, quant=5, patch_h=384, patch_w=384):
+    from patches import _sample_coords_weighted, extract_patch_list
     refimages = [imread(os.path.join(ref, i)).astype(np.float32) for i in os.listdir(ref)]
+
+    """ FIXME"""
+    prob_2d = np.ones(refimages[0].shape)
+    _ph, _pw = int(np.floor(patch_h/2)), int(np.floor(patch_w/2))
+    perim = np.zeros(prob_2d.shape, dtype=np.bool)
+    perim[_ph:-_ph, _pw:-_pw] = True
+    prob_2d[~perim] = 0
+    ecoords = _sample_coords_weighted(20, prob_2d.shape, prob_2d.flatten())
+
+    reflist = []
+    for ch, cw in zip(*ecoords):
+        for i in refimages:
+            reflist.append(i[ch-_ph:ch+_ph, cw-_pw:cw+_pw])
+
     def func(x, y):
         matchpts = np.random.randint(quant)+1
-        refimg = refimages[np.random.randint(len(refimages))]
-        x = _histogram_matching(x.astype(np.float32), refimg, bins, matchpts, False)
+        refimg = reflist[np.random.randint(len(reflist))]
+        x[:, :, 0] = _histogram_matching(x[:, :, 0].astype(np.float32), refimg, bins, matchpts, False)
         return x, y
     return func
