@@ -23,10 +23,13 @@ from tfutils import parse_image_files
 from on_the_fly import affine_transform, random_flip, random_rotate, random_illum
 from scipy.ndimage import zoom
 from skimage.transform import rescale
+from on_the_fly import gamma_correct, histo_match
+
 
 FRAC_TEST = 0.1
 augment_pipe = [affine_transform(points=10, distort=2), random_flip(),
-                random_rotate(), random_illum(perc=0.25)]
+                random_rotate(), random_illum(perc=0.25), gamma_correct(),
+                histo_match()]
 
 
 def define_callbacks(output):
