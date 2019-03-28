@@ -84,3 +84,11 @@ def histo_match(ref='ref', bins=256, quant=5, patch_h=384, patch_w=384):
         x[:, :, 0] = _histogram_matching(x[:, :, 0].astype(np.float32), refimg, bins, matchpts, False)
         return x, y
     return func
+
+
+def blur(factor=4):
+    from scipy.ndimage import gaussian_filter
+    def func(x, y):
+        x = gaussian_filter(x, sigma=np.random.random() * factor)
+        return x, y
+    return func
