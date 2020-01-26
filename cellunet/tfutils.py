@@ -64,7 +64,7 @@ def parse_image_files(inputs):
         else:
             li.append(element)
     store.append(li)
-    return zip(*store)
+    return list(zip(*store))
 
 
 def pad_image(image):

@@ -16,7 +16,7 @@ data (where the model is trying to learn how to segment and identify cell nuclei
 label 0 corresponds to the background, label 1 to the boundary, and label 2 to 
 the interior of cell nuclei. 
 
-A few functions in utils are adopted from https://github.com/carpenterlab/unet4nuclei (checking license).  
+A few functions in utils are adopted from https://github.com/carpenterlab/unet4nuclei.  
 
 Tested with keras (2.0.0), tensorflow (1.8.0).
 For GPU, use Cuda 9.0, tensorflow (1.8.0), tensorflow-gpu (1.8.0), keras (2.0.0)
