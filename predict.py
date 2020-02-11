@@ -11,6 +11,10 @@ import utils.model_builder
 
 def predict(img_path, weight_path):
     x = imread(img_path)
+    return predict_img(x, weight_path)
+
+
+def predict_img(img, weight_path):
     x = normalize(x)
 
     if x.ndim == 2:
