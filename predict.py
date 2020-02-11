@@ -14,7 +14,7 @@ def predict(img_path, weight_path):
     return predict_img(x, weight_path)
 
 
-def predict_img(img, weight_path):
+def predict_img(x, weight_path):
     x = normalize(x)
 
     if x.ndim == 2:
